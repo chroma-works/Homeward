@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     
     void Update()
     {
-        if (roomNum < 2)
+        if (roomNum < 10)
         {
             if(Enemywave.Count == 0) {
                 if (currentWave != roomNum)
