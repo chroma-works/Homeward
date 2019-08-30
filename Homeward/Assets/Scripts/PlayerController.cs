@@ -19,11 +19,24 @@ public class PlayerController : MonoBehaviour {
     public float bulletSpeed = 4f;
     public float bulletLife = 3f;
 
-    void Start()
+    void Update()
     {
-    }
+        //idk?? the input lags if you move this to fixed update, but you should use fix update to calc phys.
+        //if you don't mind, try moving phys calcs to fixupd and use them here!
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-    // Update is called once per frame
+            Physics.Raycast(ray, out RaycastHit hit);
+
+            Vector3 bulletDirection = hit.point - transform.position;
+            bulletDirection.Normalize();
+            bulletDirection.y = 0;
+            Shoot(bulletDirection);
+            Debug.Log("Bullet");
+        }
+    }
+    
     void FixedUpdate ()
     {
         /*Vector2 origin = new Vector2(Screen.width/2, Screen.height/2);
@@ -49,21 +62,6 @@ public class PlayerController : MonoBehaviour {
         transform.eulerAngles = new Vector3(30, 0, Mathf.Sin((transform.position.x + transform.position.z) * 1) * 5);
 
        gameObject.transform.position = restrictedPos;
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                Vector3 bulletDirection = hit.point - transform.position;
-                bulletDirection.Normalize();
-                bulletDirection.y = 0;
-                Shoot(bulletDirection);
-            }
-            //Debug.Log(gameObject.transform.rotation.x + " " + gameObject.transform.rotation.y);
-        }
     }
 
     void Shoot(Vector3 dir)

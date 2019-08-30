@@ -78,11 +78,11 @@ public class ShotgunChase : MonoBehaviour
 
     public void FindTarget()
     {
-        Debug.Log("Finding Target");
+        //Debug.Log("Finding Target");
         target = GameObject.FindGameObjectsWithTag("Player")[0];
         if (target == null)
         {
-            Debug.Log("target not found");
+            //Debug.Log("target not found");
         }
     }
 

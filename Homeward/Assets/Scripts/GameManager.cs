@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public float healthPickupSpawnInterval;
 
     private bool isHealthPickupPickedUp = true;
+    private bool isBossRoomNotSpawned = true;
 
     private int roomNum;
     private List<GameObject> Enemywave;
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour
     private bool areDoorsUnlocked;
     private GameObject currentRoom;
     private int lastDoor = 1;
-    // Start is called before the first frame update
+    
     void Start()
     {
         roomNum = 1;
@@ -39,38 +40,37 @@ public class GameManager : MonoBehaviour
         Enemywave = new List<GameObject>();
         currentRoom = Instantiate(rooms[Random.Range(0, rooms.Length)], new Vector3(-8.7627f, -63.050f, 114.4918f), Quaternion.identity);
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        if (roomNum < 10)
+        if (roomNum < 2)
         {
-            if (numOfWavesPerRoom >= currentWave)
-            {
-                //Debug.Log("numOfWavesPerRoom > currentWave");
-                if (Enemywave.Count == 0)
+            if(Enemywave.Count == 0) {
+                if (currentWave != roomNum)
                 {
-                    //Debug.Log("Spawn Wave");
                     SpawnWave();
+                    if (Time.time >= lastHealthPickupTime && isHealthPickupPickedUp)
+                    {
+                        SpawnHealthPickup();
+                    }
                 }
-                if (Time.time >= lastHealthPickupTime && isHealthPickupPickedUp)
+                else if (!areDoorsUnlocked)
                 {
-                    //Debug.Log("Spawn HP");
-                    SpawnHealthPickup();
+                    UnlockDoors();
                 }
-            }
-            else
-            {
-                //Debug.Log("Unlock Doors");
-                UnlockDoors();
             }
         }
-        else
+        else if(isBossRoomNotSpawned)
         {
             SpawnBossRoom();
         }
-        //Debug.Log("UPDATE");
-        
+        if (currentWave != roomNum)
+        {
+            if (Time.time >= lastHealthPickupTime && isHealthPickupPickedUp)
+            {
+                SpawnHealthPickup();
+            }
+        }
     }
 
     private void SpawnBossRoom()
@@ -82,6 +82,7 @@ public class GameManager : MonoBehaviour
         {
             doorColliders[i].gameObject.SetActive(false);
         }
+        isBossRoomNotSpawned = false;
     }
 
     private void SpawnHealthPickup()
@@ -109,6 +110,10 @@ public class GameManager : MonoBehaviour
 
     private void UnlockDoors()
     {
+        if (areDoorsUnlocked)
+        {
+            return;
+        }
         GameObject[] doors = GameObject.FindGameObjectsWithTag("Door");
         foreach (GameObject door in doors)
         {
@@ -120,6 +125,7 @@ public class GameManager : MonoBehaviour
         }
         areDoorsUnlocked = true;
     }
+
     public bool AreDoorsUnlocked()
     {
         return areDoorsUnlocked;
@@ -133,29 +139,36 @@ public class GameManager : MonoBehaviour
         int roomNum = (int)Char.GetNumericValue(currentRoom.name[currentRoom.name.Length - 8]);
         GameObject entranceDoor;
         int direction = 1;
-        lastDoor = doorId;
+        foreach (var doorCollider in doorColliders)
+        {
+            doorCollider.enabled = true;
+        }
         switch (doorId)
         {
             case 0:
                 direction = 0;
+                lastDoor = 2;
                 entranceDoor = GameObject.Find("/Room" + roomNum + "(Clone)/Door2");
                 entranceDoor.transform.Find(CLOSED_DOOR_STRING).gameObject.SetActive(false);
                 entranceDoor.transform.Find(LOCKED_DOOR_STRING).gameObject.SetActive(true);
-                Debug.Log(entranceDoor);
+                doorColliders[2].enabled = false;
                 break;
             case 1:
                 direction = 1;
+                lastDoor = -1;
                 break;
             case 2:
                 direction = 2;
+                lastDoor = 0;
                 entranceDoor = GameObject.Find("/Room" + roomNum + "(Clone)/Door0");
                 entranceDoor.transform.Find(CLOSED_DOOR_STRING).gameObject.SetActive(false);
                 entranceDoor.transform.Find(LOCKED_DOOR_STRING).gameObject.SetActive(true);
+                doorColliders[0].enabled = false;
                 break;
             default:
                 break;
         }
-        roomNum++;
+        this.roomNum++;
         currentWave = 0;
         if (direction == 0)
         {
@@ -180,23 +193,5 @@ public class GameManager : MonoBehaviour
     public void Kill(GameObject enemy)
     {
         Enemywave.Remove(enemy);
-    }
-
-    private IEnumerator scheduleTeleport(int direction)
-    {
-        yield return new WaitForSeconds(0.1f);
-        Debug.Log("YEA");
-        if(direction == 0)
-        {
-            Player.transform.position = new Vector3(23, 0, 18);
-        }
-        else if(direction == 1)
-        {
-            Player.transform.position = new Vector3(0, 0, 0);
-        }
-        else if(direction == 2)
-        {
-            Player.transform.position = new Vector3(-23, 0, 18);
-        }
     }
 }
