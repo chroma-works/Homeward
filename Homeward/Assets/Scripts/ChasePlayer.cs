@@ -28,7 +28,10 @@ public class ChasePlayer : MonoBehaviour {
         //FindTarget();
         if (rb == null)
             Debug.Log("PANIC!");
-
+        if (target == null)
+        {
+            return;
+        }
         Vector3 difference = target.transform.position - transform.position;
         direction.Normalize();
         direction = Matrix4x4.Rotate(Quaternion.Euler(new Vector3(-30, 0, 0))) * new Vector4(direction.x, direction.y, direction.z, 1);

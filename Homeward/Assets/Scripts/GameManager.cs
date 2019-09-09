@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
                 if (currentWave != roomNum)
                 {
                     SpawnWave();
-                    if (Time.time >= lastHealthPickupTime && isHealthPickupPickedUp)
+                    if (Time.timeSinceLevelLoad >= lastHealthPickupTime && isHealthPickupPickedUp)
                     {
                         SpawnHealthPickup();
                     }
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         }
         if (currentWave != roomNum)
         {
-            if (Time.time >= lastHealthPickupTime && isHealthPickupPickedUp)
+            if (Time.timeSinceLevelLoad >= lastHealthPickupTime && isHealthPickupPickedUp)
             {
                 SpawnHealthPickup();
             }
@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
     public void HealthPickupPickedUp()
     {
         isHealthPickupPickedUp = true;
-        lastHealthPickupTime = Time.time + healthPickupSpawnInterval;
+        lastHealthPickupTime = Time.timeSinceLevelLoad + healthPickupSpawnInterval;
     }
 
     public void Kill(GameObject enemy)

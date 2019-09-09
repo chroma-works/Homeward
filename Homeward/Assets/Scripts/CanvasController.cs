@@ -5,21 +5,19 @@ using UnityEngine.SceneManagement;
 
 public class CanvasController : MonoBehaviour
 {
-    public GameObject i1;
-    public GameObject i2;
-    public GameObject i3;
-    public GameObject i4;
-    public GameObject i5;
-    public GameObject i6;
-    public GameObject i7;
-    public GameObject i8;
-    public GameObject i9;
+    public GameObject[] storyBoard;
+    private int storyBoardActiveIndex;
+
     public string mapName;
+
+    public AudioSource audioPlayer;
+    public AudioClip[] clips;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        storyBoardActiveIndex = 0;
+        changeMusic(0);
     }
 
     // Update is called once per frame
@@ -27,29 +25,49 @@ public class CanvasController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("clicked!");
-            if (i1.activeSelf)
-                i1.SetActive(false);
-            else if (i2.activeSelf)
-                i2.SetActive(false);
-            else if(i3.activeSelf)
-                i3.SetActive(false);
-            else if(i4.activeSelf)
-                i4.SetActive(false);
-            else if(i5.activeSelf)
-                i5.SetActive(false);
-            else if(i6.activeSelf)
-                i6.SetActive(false);
-            else if(i7.activeSelf)
-                i7.SetActive(false);
-            else if(i8.activeSelf)
-                i8.SetActive(false);
-            else if(i9.activeSelf)
-                i9.SetActive(false);
-            else
+            if (storyBoardActiveIndex == 9)
+            {
                 SceneManager.LoadScene(mapName);
-
+                return;
+            }
+            Debug.Log("storyBoardActiveIndex!" + storyBoardActiveIndex + (storyBoardActiveIndex + 1));
+            storyBoard[storyBoardActiveIndex].SetActive(false);
+            storyBoardActiveIndex++;
+            if (storyBoardActiveIndex == 3)
+            {
+                audioPlayer.Stop();
+            }
+            if (storyBoardActiveIndex == 4)
+            {
+                changeMusic(1);
+                audioPlayer.volume = 0.007f;
+            }
+            if (storyBoardActiveIndex == 7)
+            {
+                changeMusic(2);
+                audioPlayer.volume = 0.055f;
+            }
+        }
+        if (storyBoardActiveIndex == 5)
+        {
+            if (audioPlayer.volume < 0.4f)
+            {
+                audioPlayer.volume += 0.005f;
+            }
+        }
+        if (storyBoardActiveIndex == 6)
+        {
+            if (audioPlayer.volume < 0.6f)
+            {
+                audioPlayer.volume += 0.005f;
+            }
         }
     }
 
+    private void changeMusic(int index)
+    {
+        audioPlayer.Stop();
+        audioPlayer.clip = clips[index];
+        audioPlayer.Play();
+    }
 }
